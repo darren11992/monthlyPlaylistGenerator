@@ -17,7 +17,11 @@
   </head>
 
   <body>
+    
+    
     <div class="container">
+      <div id="navigation">
+      </div>
       <div id="login">
         <h1>This is an example of the Authorization Code flow</h1>
         <a href="/login" class="btn btn-primary">Log in with Spotify</a>
@@ -30,6 +34,13 @@
         <button class="btn btn-default" id="obtain-new-token">Obtain new token using the refresh token</button>
       </div>
     </div>
+
+    <script id="navigation-template" type="text/x-handlebars-template">
+      <nav>
+        <li href="/">Home</li>
+        <li id= "loggedInName" href="/">Logged in as {{ display_name}}</li>
+      </nav>
+    </script>
 
     <script id="user-profile-template" type="text/x-handlebars-template">
       <h1>Logged in as {{display_name}}</h1>
@@ -78,9 +89,13 @@
           return hashParams;
         }
 
+        var navigationSource = document.getElementById('navigation-template').innerHTML,
+            navigationTemplate = Handlebars.compile(navigationSource),
+            navigationPlaceholder = document.getElementById('navigation')
+
         var userProfileSource = document.getElementById('user-profile-template').innerHTML,
             userProfileTemplate = Handlebars.compile(userProfileSource),
-            userProfilePlaceholder = document.getElementById('user-profile');
+            userProfilePlaceholder = document.getElementById('user-profile')
 
         var oauthSource = document.getElementById('oauth-template').innerHTML,
             oauthTemplate = Handlebars.compile(oauthSource),
@@ -109,13 +124,16 @@
                 },
                 success: function(response) {
                   userProfilePlaceholder.innerHTML = userProfileTemplate(response);
-
+                  navigationPlaceholder.innerHTML = navigationTemplate(response);
                   $('#login').hide();
                   $('#loggedin').show();
+
                 }
             });
           } else {
               // render initial screen
+              navigationPlaceholder.innerHTML = navigationTemplate();
+              $('#loggedInName').hide();
               $('#login').show();
               $('#loggedin').hide();
           }
